@@ -1,0 +1,65 @@
+{
+  "source": "couchbase-stream-ai-v2.1.3.zip",
+  "sourceSHA256": "230e6998e4e1e425f20a7f1c1e433b5a702d16e22fb93842edf76f320220f124",
+  "prepared": "2026-09-28",
+  "packageRevision": "memory-savings-r1",
+  "architecture": "arm64",
+  "chatModel": "mistralai/mistral-7b-instruct-v0.3",
+  "embeddingModel": "nvidia/llama-3.2-nv-embedqa-1b-v2",
+  "dimensions": 2048,
+  "suppliedAssets": {
+    "vendor/agentmemory-server-arm64-1.0.0-rc2.tar": "0da4eb2e9de6727557c5ca60cc39de6f747d5f19ebe03f7e2274292e7c8068ec",
+    "mcp-server/vendor/couchbase_mcp_server-1.0.0.post1.tar.gz": "bd619cb69e5ee3809fdeb7d456941d42a452c6722ab34662e1399ec6f0644b2e"
+  },
+  "usageAccounting": "Executed native Memory policy trial; provider tokens, embeddings, background work, exact originals and illustrative token pricing; not invoice savings",
+  "liveInstallation": "Running deployment unchanged; no live cloud trial executed for this release",
+  "profileMemory": "Idempotent explicit-preference mirror with stored/enrichment status and provenance labels",
+  "dashboard": "Measured previous/selective Memory policies; total routed use and unmetered cloud functions disclosed separately",
+  "aiFunctions": "Persisted viewing guide on title page, execution audit, source validation, explicit reuse and assistant title-information integration",
+  "appVersion": "1.1.0",
+  "releaseStatus": "demo-release-offline-validated",
+  "predecessor": "1.0.0-couchbase-ledger-r1",
+  "healthProbes": {
+    "refreshSeconds": 300,
+    "cacheTtlSeconds": 600,
+    "mistralHealthOutputTokenLimit": 1,
+    "requestParameter": "max_tokens",
+    "allProbesMetered": true
+  },
+  "validation": {
+    "pythonTestsPassed": 385,
+    "javascriptRendererSuitesPassed": 2,
+    "dockerImagesBuilt": [
+      "ui",
+      "memory",
+      "usage"
+    ],
+    "liveCloudTrialExecuted": false,
+    "runningDeploymentChanged": false,
+    "fullFreshDeploymentRepeated": false,
+    "pythonFilesParsed": 93,
+    "shellFilesChecked": 26,
+    "composeConfigurationValidated": true
+  },
+  "documentation": [
+    "README.md",
+    "ARCHITECTURE.md",
+    "VALIDATION.md",
+    "AI-FUNCTIONS-GUIDE.md",
+    "METRICS-AUDIT.md",
+    "SAVINGS-DEMO.md",
+    "REBUILD-PROMPT.md"
+  ],
+  "applicationDatabase": "Couchbase only",
+  "usageStorage": {
+    "keyspace": "streaming.telemetry.ai_metrics",
+    "stateKey": "measured-usage-state::streamai",
+    "eventKeyPrefix": "measured-usage::streamai::",
+    "localDatabase": false,
+    "localUsageVolume": false,
+    "durability": "majority_and_persist_to_active",
+    "queryConsistency": "request_plus",
+    "supportedGatewayProcessesPerNamespace": 1
+  },
+  "upgrade": "Verifies flushed previous-meter Capella copies and adopts window/settings; unverified earlier copies remain separate"
+}

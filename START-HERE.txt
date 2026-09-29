@@ -1,0 +1,30 @@
+STREAMAI FOR CAPELLA — VERSION 1.1.0
+
+1. Extract the full ZIP into a NEW folder.
+2. Copy your working capella.env and public certs/capella-ca.pem into it,
+   or fill the placeholders and supply your cluster certificate.
+3. Keep AI_FUNCTIONS_ENABLED=true if all three functions are deployed.
+   Keep DATA_PROCESSING_MODE=python_loader unless a managed workflow exists.
+4. Start Docker Desktop. Leave the old usage container available for history
+   verification. Run in this new folder:
+       bash START-CAPELLA.sh
+5. Wait for success; open http://localhost:8089 and refresh the browser.
+
+UI, Memory and usage are rebuilt together. Existing Capella data is retained;
+app-versioned plans warm again. Do not clear buckets or volumes.
+
+Selective Memory processing retains originals/embeddings but skips redundant
+optional summaries of short turns and explicit facts.
+To see measured differences: complete 2–4 short chats, wait for Memory writes,
+then choose Compare memory policies in Measured Agent Memory savings.
+
+The experiment calls real models under both policies. Dollars are illustrative
+token-cost equivalents, not Capella invoice savings.
+
+README.md             Startup, configuration and upgrades
+ARCHITECTURE.md       Components, ownership and execution paths
+SAVINGS-DEMO.md       Measured comparison and presenter wording
+METRICS-AUDIT.md      Accounting definitions and limits
+AI-FUNCTIONS-GUIDE.md Persisted viewing guides and visible proof
+REBUILD-PROMPT.md     Comprehensive reconstruction instructions
+VALIDATION.md         Tested scope and remaining limits
