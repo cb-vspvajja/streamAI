@@ -1,0 +1,12 @@
+# Documentation-only provider examples. Runtime configuration comes from environment variables.
+providers:
+  ollama:
+    chat_api: /api/chat
+    embeddings_api: /v1/embeddings
+  openai_compatible:
+    chat_api: /v1/chat/completions
+    embeddings_api: /v1/embeddings
+  capella_model_service:
+    chat_api: /v1/chat/completions
+    embeddings_api: /v1/embeddings
+    authentication: bearer

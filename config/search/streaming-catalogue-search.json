@@ -1,0 +1,259 @@
+{
+  "type": "fulltext-index",
+  "name": "streaming-catalogue-search",
+  "sourceType": "gocbcore",
+  "sourceName": "streaming",
+  "sourceParams": {},
+  "planParams": {
+    "maxPartitionsPerPIndex": 1024,
+    "indexPartitions": 1,
+    "numReplicas": 0
+  },
+  "params": {
+    "doc_config": {
+      "docid_prefix_delim": "",
+      "docid_regexp": "",
+      "mode": "scope.collection.type_field",
+      "type_field": "type"
+    },
+    "mapping": {
+      "default_analyzer": "standard",
+      "default_datetime_parser": "dateTimeOptional",
+      "default_field": "_all",
+      "default_mapping": {
+        "enabled": false,
+        "dynamic": false
+      },
+      "types": {
+        "catalogue.titles.title": {
+          "enabled": true,
+          "dynamic": false,
+          "properties": {
+            "title": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "title",
+                  "type": "text",
+                  "analyzer": "en",
+                  "index": true,
+                  "store": true,
+                  "include_term_vectors": true
+                }
+              ]
+            },
+            "originalTitle": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "originalTitle",
+                  "type": "text",
+                  "analyzer": "en",
+                  "index": true,
+                  "store": true,
+                  "include_term_vectors": true
+                }
+              ]
+            },
+            "overview": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "overview",
+                  "type": "text",
+                  "analyzer": "en",
+                  "index": true,
+                  "store": true,
+                  "include_term_vectors": true
+                }
+              ]
+            },
+            "searchText": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "searchText",
+                  "type": "text",
+                  "analyzer": "en",
+                  "index": true,
+                  "store": true,
+                  "include_term_vectors": true
+                }
+              ]
+            },
+            "genres": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "genres",
+                  "type": "text",
+                  "analyzer": "keyword",
+                  "index": true,
+                  "store": true,
+                  "include_term_vectors": true
+                }
+              ]
+            },
+            "keywords": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "keywords",
+                  "type": "text",
+                  "analyzer": "keyword",
+                  "index": true,
+                  "store": true,
+                  "include_term_vectors": true
+                }
+              ]
+            },
+            "castNames": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "castNames",
+                  "type": "text",
+                  "analyzer": "keyword",
+                  "index": true,
+                  "store": true,
+                  "include_term_vectors": true
+                }
+              ]
+            },
+            "directorNames": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "directorNames",
+                  "type": "text",
+                  "analyzer": "keyword",
+                  "index": true,
+                  "store": true,
+                  "include_term_vectors": true
+                }
+              ]
+            },
+            "originCountries": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "originCountries",
+                  "type": "text",
+                  "analyzer": "keyword",
+                  "index": true,
+                  "store": true,
+                  "include_term_vectors": true
+                }
+              ]
+            },
+            "spokenLanguages": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "spokenLanguages",
+                  "type": "text",
+                  "analyzer": "keyword",
+                  "index": true,
+                  "store": true,
+                  "include_term_vectors": true
+                }
+              ]
+            },
+            "originalLanguage": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "originalLanguage",
+                  "type": "text",
+                  "analyzer": "keyword",
+                  "index": true,
+                  "store": true,
+                  "include_term_vectors": true
+                }
+              ]
+            },
+            "contentType": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "contentType",
+                  "type": "text",
+                  "analyzer": "keyword",
+                  "index": true,
+                  "store": true,
+                  "include_term_vectors": true
+                }
+              ]
+            },
+            "releaseYear": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "releaseYear",
+                  "type": "number",
+                  "index": true,
+                  "store": true
+                }
+              ]
+            },
+            "runtimeMinutes": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "runtimeMinutes",
+                  "type": "number",
+                  "index": true,
+                  "store": true
+                }
+              ]
+            },
+            "voteAverage": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "voteAverage",
+                  "type": "number",
+                  "index": true,
+                  "store": true
+                }
+              ]
+            },
+            "embedding": {
+              "enabled": true,
+              "dynamic": false,
+              "fields": [
+                {
+                  "name": "embedding",
+                  "type": "vector",
+                  "dims": 2048,
+                  "similarity": "cosine",
+                  "index": true,
+                  "vector_index_optimized_for": "recall"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "store": {
+      "indexType": "scorch",
+      "segmentVersion": 16
+    }
+  }
+}

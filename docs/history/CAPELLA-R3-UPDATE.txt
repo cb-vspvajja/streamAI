@@ -1,0 +1,22 @@
+StreamAI Capella package update r3
+
+Fixes:
+- Agent Catalog publisher and UI receive AGENT_CATALOG_CONN_ROOT_CERTIFICATE.
+- The existing certs/capella-ca.pem is mounted read-only at that configured path.
+- Publisher checks the certificate path before indexing.
+- Includes the r2 Agent Memory Dockerfile fix (direct Python invocation).
+
+To update an existing extracted Capella package:
+1. Save streamai-capella-r3-update.zip in Downloads.
+2. In Terminal, enter your existing couchbase-stream-ai-v2.1.3-capella folder.
+3. Run:
+   unzip -o "$HOME/Downloads/streamai-capella-r3-update.zip"
+   bash START-CAPELLA.sh
+
+The update contains only application/configuration files and documentation.
+It does not contain capella.env, certificate files or catalogue data.
+Startup rechecks the existing setup and retains loaded catalogue/history data.
+
+The revised publisher uses its existing Docker dependency layers when available.
+No host Git, Xcode or Python is required.
+See VALIDATION.md for completed checks and remaining live verification.

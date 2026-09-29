@@ -1,0 +1,42 @@
+STREAMAI CAPELLA — REVISION r9 (28 September 2026)
+
+Integrated AI viewing guides and an honest, scoped savings comparison.
+Full package includes earlier Capella, tracing, usage and profile-memory fixes.
+No Git, patch application or Xcode is required.
+
+UPGRADE
+1. Extract the full r9 ZIP into a NEW folder.
+2. Copy your working capella.env and certs/capella-ca.pem into that folder.
+3. Keep AI_FUNCTIONS_ENABLED=true to generate viewing guides. The savings panel
+   now works with AI Functions enabled. Keep your working data-processing mode.
+4. With Docker Desktop running, open Terminal in the extracted folder and run:
+
+       bash START-CAPELLA.sh
+
+5. Refresh http://localhost:8089 and sign in. Your configured port takes precedence.
+   The script rebuilds/recreates the UI and usage service. Existing Capella data
+   and Docker volumes remain. Do not delete volumes to reset metrics.
+
+DEMO
+Open a title -> Generate viewing guide -> see the summary, mood and synopsis
+tone -> open Saved execution details -> Reuse saved guide -> Ask the assistant
+about this title. Generation is saved; reuse does not regenerate the guide.
+Background Agent Memory processing can still consume tokens during chat.
+The Scandal (tv::275102) already has a guide from the live r9 validation.
+
+SAVINGS
+AI Functions no longer blank the three headline cards. Their scope is all model
+work through the local meter, including background memory, setup/ingestion and
+retries. AI Functions work is shown separately; its tokens/cost are not reported.
+The cards compare measured usage with an assumed baseline and hypothetical USD
+rates. They are not overall deployment savings or Capella bill reductions.
+After startup/background activity settles, use Start new demo window for a clean
+presentation window, then chat and allow new memory background work to complete.
+Negative results and unknown usage are preserved rather than made to look positive.
+
+AI guide storage: streaming.catalogue.titles -> aiEnrichment
+Generation audit: streaming.telemetry.ai_metrics -> ai-function-event::<ID>
+Names assume the supplied bucket/scope settings.
+
+Read AI-FUNCTIONS-GUIDE.md, METRICS-AUDIT.md and VALIDATION.md for detail.
+The package is not automatically installed over your running application.

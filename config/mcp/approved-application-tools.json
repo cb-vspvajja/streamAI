@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0",
+  "implementation": "couchbase-mcp-server==1.0.0.post1",
+  "transport": "streamable_http",
+  "readOnly": true,
+  "businessToolsGovernedByAgentCatalog": [
+    "get_viewer_context",
+    "get_watch_history",
+    "get_catalogue_statistics",
+    "query_catalogue_analytics",
+    "resolve_catalogue_title",
+    "check_entitlement",
+    "inspect_streamai_schema"
+  ],
+  "requiredMcpPrimitives": [
+    "get_document_by_id",
+    "run_sql_plus_plus_query",
+    "get_scopes_and_collections_in_bucket"
+  ],
+  "validatedApplicationWrites": [
+    "update_viewer_preference",
+    "update_viewer_entitlement",
+    "record_like",
+    "update_watchlist",
+    "record_not_interested",
+    "start_or_resume_playback"
+  ],
+  "security": {
+    "principle": "MCP reads are read-only; consumer write actions remain behind application business policy and Couchbase RBAC.",
+    "resolvedCatalogueTitleRequired": true,
+    "entitlementCheckRequired": true,
+    "traceEveryToolCall": true
+  }
+}

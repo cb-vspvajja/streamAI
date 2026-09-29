@@ -1,0 +1,25 @@
+StreamAI Capella package update r4
+
+Fixes:
+- Setup creates ix_plan_cache_stats on recommendations.plan_cache.
+  This SQL++ index supports the plan-cache statistics query used by the UI
+  and final startup verification. The vector Search index is also required.
+- Final verification identifies /api/planner/cache when its request fails.
+- Includes the r2 Memory Dockerfile and r3 Agent Catalog certificate fixes.
+
+The missing index has already been added to your current Capella demo, and
+the running application's startup verification and HTTP checks passed.
+Applying this update keeps your source package ready for future setup runs.
+
+To update an existing extracted Capella package:
+1. Save streamai-capella-r4-update.zip in Downloads.
+2. In Terminal, enter your existing couchbase-stream-ai-v2.1.3-capella folder.
+3. Run:
+   unzip -o "$HOME/Downloads/streamai-capella-r4-update.zip"
+
+No restart is required for the already-running, repaired demo.
+For a future setup or restart, use the usual bash START-CAPELLA.sh command.
+
+The update contains only application/configuration files and documentation.
+It does not contain capella.env, certificates or catalogue data.
+See VALIDATION.md for the completed live and offline checks.
