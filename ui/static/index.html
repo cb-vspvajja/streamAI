@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en" data-experience-mode="showcase">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StreamAI</title>
+  <link rel="preconnect" href="https://image.tmdb.org" crossorigin />
+  <link rel="dns-prefetch" href="https://image.tmdb.org" />
+  <link rel="stylesheet" href="/static/styles.css?v=1.1.0" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="brand" id="brandButton" aria-label="Home">
+        <span><strong>Stream</strong><em>AI</em></span>
+      </button>
+      <nav class="nav-links" aria-label="Primary">
+        <button class="nav-link active" data-home>Home</button>
+        <button class="nav-link" data-search-preset="popular films">Films</button>
+        <button class="nav-link" data-search-preset="popular television series">TV Series</button>
+        <button class="nav-link" data-row-jump="continue">Continue Watching</button>
+        <button class="nav-link" data-row-jump="my-list">My List</button>
+        <button class="nav-link" id="profileNavButton">My Profile</button>
+        <button class="nav-link" id="metricsNavButton" data-showcase-only>AI Usage</button>
+        <button class="nav-link" id="inspectorNavButton" data-showcase-only>Agent Inspector</button>
+        <button class="nav-link showcase-nav" id="showcaseNavButton" data-showcase-only>Showcase Studio</button>
+      </nav>
+      <div class="top-actions">
+        <label class="experience-switcher" id="experienceSwitcher" title="Switch between the complete Couchbase showcase and the customer-facing application view">
+          <input type="checkbox" id="experienceModeToggle" role="switch" aria-label="Use customer-facing application view" />
+          <span class="experience-track" aria-hidden="true"><i></i></span>
+          <span class="experience-copy"><strong id="experienceModeLabel">Showcase</strong><small>View</small></span>
+        </label>
+        <button class="icon-btn" id="openSearchButton" title="Search">⌕</button>
+        <button class="status-pill" id="serviceStatusButton" data-showcase-only>
+          <span class="status-dot"></span>
+          <span id="serviceStatusText">Starting services</span>
+        </button>
+        <button class="viewer-chip" id="viewerButton">
+          <span class="avatar" id="viewerAvatar">?</span>
+          <span class="viewer-copy"><strong id="viewerName">Viewer</strong><small id="sessionLabel">Not signed in</small></span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="hero">
+        <div class="hero-backdrop" id="heroBackdrop"></div>
+        <div class="hero-gradient"></div>
+        <div class="hero-content">
+          <span class="eyebrow">AI-powered personalisation</span>
+          <h1 id="heroTitle">Your next story starts here.</h1>
+          <p id="heroOverview">Sign in while the streaming services initialise in the background.</p>
+          <div class="hero-meta" id="heroMeta"></div>
+          <div class="hero-actions">
+            <button class="primary-btn" id="heroPlay">▶ Play</button>
+            <button class="secondary-btn" id="heroInfo">ⓘ More Info</button>
+            <button class="assistant-btn" id="openAssistantButton">✦ Ask StreamAI</button>
+          </div>
+          <div class="hero-explain" id="heroExplain" hidden>
+            <strong>Why this appeared</strong>
+            <span id="heroReason"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="search-dock" id="searchDock" hidden>
+        <div class="search-panel">
+          <div class="search-copy"><span class="eyebrow" id="searchEyebrow">Catalogue retrieval</span><h2 id="searchHeading">Search the catalogue</h2></div>
+          <form id="catalogueSearchForm" class="catalogue-search-form">
+            <input id="catalogueSearchInput" placeholder="Try: Indian thriller or motorcycle movies" autocomplete="off" />
+            <select id="searchMode" aria-label="Search mode" data-showcase-only>
+              <option value="hybrid">Hybrid FTS + Vector</option>
+              <option value="fts">Full-Text Search</option>
+              <option value="vector">Vector Search</option>
+            </select>
+            <select id="contentType" aria-label="Content type">
+              <option value="">Films + TV</option><option value="movie">Films</option><option value="tv">TV Series</option>
+            </select>
+            <button class="primary-btn" type="submit">Search</button>
+            <button class="icon-btn close-search" id="closeSearchButton" type="button">×</button>
+          </form>
+          <details class="search-mode-help" data-showcase-only>
+            <summary>How the search modes work</summary>
+            <div class="search-mode-grid">
+              <p><strong>FTS</strong><span>Field-aware lexical matching across title, synopsis, genres, keywords and people. Best for exact words, names and filters.</span></p>
+              <p><strong>Vector</strong><span>Embeds the query and retrieves semantically similar catalogue embeddings. Best for themes, mood and conceptual language.</span></p>
+              <p><strong>Hybrid</strong><span>Sends both a regular Search query and a KNN vector query to Couchbase. Matches from either route can qualify; titles strong in both rank higher.</span></p>
+              <p><strong>Structured shortcut</strong><span>Known genres, countries and profile signals skip embedding and use deterministic FTS/SQL++ for lower latency and exactness. The trace shows requested and effective modes.</span></p>
+            </div>
+          </details>
+          <div class="retrieval-trace" id="retrievalTrace" data-showcase-only hidden></div>
+        </div>
+      </section>
+
+      <section class="content-area" id="contentArea">
+        <div id="rowsContainer" class="rows-container"></div>
+        <section class="agent-inspector-section" id="agentInspectorSection" data-showcase-only>
+          <div class="section-heading inspector-heading">
+            <div><span class="eyebrow">Governed streaming agent</span><h2>AI Data Plane Inspector</h2><p>See the Agent Catalog version, MCP transport, full Agent Tracer conversation thread, authoritative tools, policy outcome and grounded evidence.</p></div>
+            <div class="metrics-actions"><button class="secondary-btn compact" id="mcpProofButton">Run MCP proof</button><button class="secondary-btn compact" id="aiFunctionsProofButton">AI viewing guide</button><button class="secondary-btn compact" id="dataProcessingProofButton">Vector workflow status</button><button class="secondary-btn compact" id="refreshInspector">Refresh traces</button></div>
+          </div>
+          <div class="inspector-summary" id="agentTraceSummary"><div class="empty-row">Ask StreamAI a question or action to generate a governed trace.</div></div>
+          <div class="inspector-grid">
+            <article class="inspector-panel"><div class="mini-heading"><strong>Agent plan</strong><span id="agentPlanMode">No trace</span></div><div id="agentPlan" class="inspector-list"></div></article>
+            <article class="inspector-panel"><div class="mini-heading"><strong>Tool calls</strong><span id="agentToolCount">0 calls</span></div><div id="agentTools" class="tool-timeline"></div></article>
+            <article class="inspector-panel"><div class="mini-heading"><strong>Policy and entitlement</strong><span>Authoritative checks</span></div><div id="agentPolicy" class="inspector-list"></div><div id="entitlementSummary" class="entitlement-summary"></div></article>
+            <article class="inspector-panel"><div class="mini-heading"><strong>Agent Catalog + MCP</strong><span id="agentCatalogMode">Connecting</span></div><div id="agentRuntimeStatus" class="native-runtime-status"></div><div id="agentCatalogList" class="catalog-tool-list"></div></article>
+          </div>
+        </section>
+
+        <section class="metrics-section" id="metricsSection" data-showcase-only>
+          <div class="section-heading metrics-heading">
+            <div><span class="eyebrow">Agent Memory + AIDP</span><h2>Measured Agent Memory savings</h2><p>The same conversation. Two memory policies. Recorded model usage.</p></div>
+            <div class="metrics-actions"><button class="secondary-btn compact" id="runMemoryComparison">Compare memory policies</button><button class="secondary-btn compact" id="refreshMetrics">Refresh</button><button class="ghost-btn compact" id="resetMetrics">Start new demo window</button></div>
+          </div>
+          <div class="savings-overview">
+            <div class="mini-heading"><span class="estimate-badge">MEASURED POLICY COMPARISON</span><span class="savings-live">Auto-refreshes while visible</span></div>
+            <p id="comparisonScope"></p><p class="metered-usage-summary" id="meteredUsageSummary"></p>
+            <div class="metrics-grid savings-grid" id="savingsCards"></div>
+            <p class="savings-status" id="savingsStatus" role="status"></p>
+            <p class="savings-caption" id="savingsCoverage"></p><p class="savings-caption">The comparison makes real model calls in isolated trial sessions. Dollar values use illustrative token rates. Capella bills model capacity by time, so fewer tokens do not automatically reduce the bill.</p><div class="external-ai-usage"><strong>Catalogue AI Functions · outside this comparison</strong><p id="externalAIUsage"></p></div>
+          </div>
+          <details class="metrics-details" id="metricsDetails">
+            <summary>How this is calculated <span>Recorded evidence &amp; example prices</span></summary>
+            <p class="metrics-detail-note">Both trials start with empty memory. Short original messages and facts must match on readback and all blocks must be ready. Background calls and retries within each phase count. This verifies retained content, not equivalent summary-based search quality.</p>
+            <div class="savings-comparison">
+            <div class="value-comparison">
+              <div class="value-panel"><div class="mini-heading"><strong>LLM token comparison</strong></div>
+                <div class="comparison-bar-label"><span>Previous memory policy</span><strong id="comparisonBaselineTokens">Unavailable</strong></div><div class="comparison-bar"><span id="comparisonBaselineBar"></span></div>
+                <div class="comparison-bar-label"><span>Selective memory policy</span><strong id="comparisonObservedTokens">Unavailable</strong></div><div class="comparison-bar"><span id="comparisonObservedBar"></span></div>
+                <small id="comparisonReduction"></small>
+              </div>
+              <div class="value-panel" style="overflow-x:auto" id="savingsTable"></div>
+            </div>
+            <details class="comparison-assumptions"><summary>Example USD prices for the next trial</summary>
+              <p>Both usage totals are measured. Only the token prices below are illustrative assumptions. Each saved trial retains its own prices. These are not Capella prices.</p>
+              <form id="comparisonAssumptionsForm">
+                <label style="display:none">Baseline LLM requests / chat<input id="comparison_llmRequestsPerChat" name="llmRequestsPerChat" type="number" min="0" max="100" step="1" required></label>
+                <label style="display:none">Input tokens / baseline LLM request<input id="comparison_inputTokensPerLlmRequest" name="inputTokensPerLlmRequest" type="number" min="0" max="1000000" step="1" required></label>
+                <label style="display:none">Output tokens / baseline LLM request<input id="comparison_outputTokensPerLlmRequest" name="outputTokensPerLlmRequest" type="number" min="0" max="1000000" step="1" required></label>
+                <label style="display:none">Baseline embedding requests / chat<input id="comparison_embeddingRequestsPerChat" name="embeddingRequestsPerChat" type="number" min="0" max="100" step="1" required></label>
+                <label style="display:none">Baseline embedding input tokens / chat<input id="comparison_embeddingTokensPerChat" name="embeddingTokensPerChat" type="number" min="0" max="1000000" step="1" required></label>
+                <label>Reference LLM input USD / 1M tokens<input id="comparison_llmInputUsdPerMillion" name="llmInputUsdPerMillion" type="number" min="0" max="1000000" step="any" required></label>
+                <label>Reference LLM output USD / 1M tokens<input id="comparison_llmOutputUsdPerMillion" name="llmOutputUsdPerMillion" type="number" min="0" max="1000000" step="any" required></label>
+                <label>Reference embedding USD / 1M tokens<input id="comparison_embeddingInputUsdPerMillion" name="embeddingInputUsdPerMillion" type="number" min="0" max="1000000" step="any" required></label>
+                <button class="secondary-btn compact" type="submit">Save prices for next trial</button>
+              </form>
+            </details>
+            <p class="comparison-caveat" id="comparisonLimitations"></p><details><summary>View trial receipt and request IDs</summary><pre id="memoryTrialReceipt" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details>
+          </div>
+          <div class="mini-heading measured-heading"><strong>Measured usage details</strong><span>Provider reports and recorded operations</span></div>
+          <p class="metrics-detail-note" id="metricsRuntimeNote">Loading the reporting window and configured runtime.</p><p class="metrics-detail-note" id="metricsCoverageNote"></p>
+          <div class="metrics-grid" id="metricsGrid"></div>
+          <div class="value-comparison">
+            <div class="value-panel"><div class="mini-heading"><strong>Token reporting coverage</strong><span id="tokenReductionLabel">Unavailable</span></div><div class="stacked-meter"><span class="meter-used" id="tokensUsedBar"></span><span class="meter-saved" id="tokensSavedBar"></span></div><div class="meter-legend"><span><i class="used-dot"></i>Complete usage reports</span><span><i class="saved-dot"></i>Missing or incomplete usage</span></div></div>
+            <div class="value-panel"><div class="mini-heading"><strong>Billing and savings</strong><span id="costSavingsLabel">Not measured</span></div><div class="cost-compare" id="costComparison"></div><small id="metricsPricingNote"></small></div>
+          </div>
+          <div class="value-panel" style="overflow-x:auto;margin-top:16px"><div class="mini-heading"><strong>Model usage by source</strong><span>Deployment totals, including background work</span></div><div id="modelUsageBreakdown"></div></div>
+          <div class="metrics-explanation">
+            <article><strong>Requests are not turns</strong><p>One chat can trigger a planner request, several memory or embedding requests and retries. Every routed inference attempt is counted separately; background work is included.</p></article>
+            <article><strong>Unknown is not zero</strong><p>Only provider-reported tokens are summed. Missing usage, failed streams and activity-reporting gaps are identified. These figures do not prove recommendation quality or cash savings.</p></article>
+            <article><strong>Persistent audit</strong><p>Measurements and comparison receipts are stored directly in Couchbase at <code>streaming.telemetry.ai_metrics</code>. A new window changes the display period; it does not delete the audit history.</p></article>
+          </div>
+          <div class="recent-metrics"><div class="mini-heading"><strong>Recent model requests</strong><span>All routed sources; newest first</span></div><div class="metrics-event-list" id="metricsEventList"></div></div>
+          </details>
+        </section>
+
+        <section class="data-plane-section" data-showcase-only>
+          <div class="section-heading">
+            <div><span class="eyebrow">Couchbase AI Data Plane</span><h2>One operational platform for agentic discovery</h2></div>
+            <button class="secondary-btn compact" id="refreshStatus">Refresh services</button>
+          </div>
+          <div class="service-grid" id="serviceGrid"></div>
+          <div class="architecture-strip">
+            <div><span>01</span><strong>Ingest</strong><small>TMDB → Couchbase</small></div><div class="arrow">→</div>
+            <div><span>02</span><strong>Understand</strong><small>Field-aware FTS + vectors</small></div><div class="arrow">→</div>
+            <div><span>03</span><strong>Remember</strong><small>Unified profile + Agent Memory</small></div><div class="arrow">→</div>
+            <div><span>04</span><strong>Recommend</strong><small>Grounded catalogue retrieval</small></div><div class="arrow">→</div>
+            <div><span>05</span><strong>Explain</strong><small>Match provenance</small></div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <aside class="assistant-drawer" id="assistantDrawer" aria-hidden="true">
+      <div class="drawer-header"><div><span class="eyebrow">Conversational discovery</span><h2>StreamAI Assistant</h2></div><button class="icon-btn" id="closeAssistantButton">×</button></div>
+      <div class="session-toolbar">
+        <div><strong id="drawerViewer">No viewer</strong><small id="drawerSession">No active session</small></div>
+        <div class="toolbar-actions"><button class="ghost-btn" id="newSessionButton">New session</button><button class="ghost-btn" id="memoryButton" data-showcase-only>Memory</button><button class="ghost-btn" id="assistantProfileButton">Profile</button><button class="ghost-btn" id="assistantInspectorButton" data-showcase-only>Trace</button></div>
+      </div>
+      <div class="prompt-chips" id="promptChips">
+        <button>Suggest some good movies</button>
+        <button>Show me sci-fi movies</button>
+        <button>What should I watch next?</button>
+        <button>Is The Bad Guys 2 available?</button>
+        <button>What films have I watched already?</button>
+        <button>Add the first one to My List</button>
+      </div>
+      <div class="chat-log" id="chatLog"></div>
+      <div class="assistant-recommendations" id="assistantRecommendations" hidden>
+        <div class="mini-heading"><strong>Verified catalogue results</strong><span id="assistantSearchMode" data-showcase-only></span></div>
+        <div class="mini-carousel" id="assistantCarousel"></div>
+      </div>
+      <form class="chat-composer" id="chatForm">
+        <textarea id="chatInput" rows="2" placeholder="Ask what to watch, browse a genre, check a title, or teach the assistant your taste..."></textarea>
+        <div class="composer-footer">
+          <label class="toggle"><input type="checkbox" id="captureFacts" checked /><span></span> Remember durable preferences</label>
+          <select id="chatSearchMode" aria-label="Assistant search mode" data-showcase-only><option value="hybrid">Hybrid</option><option value="fts">FTS</option><option value="vector">Vector</option></select>
+          <button class="send-btn" type="submit">Send ↑</button>
+        </div>
+      </form>
+    </aside>
+    <div class="drawer-scrim" id="drawerScrim" hidden></div>
+
+    <dialog class="auth-dialog" id="authDialog">
+      <div class="auth-card">
+        <div class="auth-brand"><span class="brand-mark" id="authBrandMark">CB</span><div><strong>StreamAI</strong><small>Persistent viewer experience</small></div></div>
+        <h2>Welcome back</h2>
+        <p id="authDescription">The screen loads immediately. Login becomes available as soon as the local services are ready.</p>
+        <div class="readiness-banner" id="readinessBanner"><span class="spinner"></span><span id="readinessText">Connecting to local services…</span></div>
+        <div class="auth-tabs"><button class="auth-tab active" data-auth-tab="login">Sign in</button><button class="auth-tab" data-auth-tab="register">Create viewer</button></div>
+        <form id="loginForm" class="auth-form">
+          <label>Login ID<input id="loginId" value="sai" autocomplete="username" /></label>
+          <label>Demo PIN<input id="loginPin" type="password" value="1234" autocomplete="current-password" /></label>
+          <button class="primary-btn wide" id="loginSubmit" type="submit" disabled>Continue viewing</button>
+        </form>
+        <form id="registerForm" class="auth-form" hidden>
+          <label>Viewer name<input id="registerName" value="Sai Vajja" /></label>
+          <label>Login ID<input id="registerId" value="sai" /></label>
+          <label>Demo PIN<input id="registerPin" type="password" value="1234" /></label>
+          <button class="primary-btn wide" id="registerSubmit" type="submit" disabled>Create viewer</button>
+        </form>
+        <div class="auth-error" id="authError" hidden></div>
+        <small class="auth-note" data-showcase-only>Demo authentication only. The PIN is salted and hashed; use OIDC in production.</small>
+      </div>
+    </dialog>
+
+    <dialog class="detail-dialog" id="detailDialog">
+      <button class="dialog-close" id="closeDetail">×</button>
+      <div class="detail-backdrop" id="detailBackdrop"></div>
+      <div class="detail-content">
+        <img id="detailPoster" alt="" loading="lazy" decoding="async" />
+        <div>
+          <span class="eyebrow" id="detailType"></span><h2 id="detailTitle"></h2><div class="detail-meta" id="detailMeta"></div>
+          <p id="detailOverview"></p>
+          <section class="ai-viewing-guide" id="detailAIGuide" aria-label="AI viewing guide" aria-live="polite"></section>
+          <div class="detail-facts" id="detailFacts"></div>
+          <div class="detail-actions"><button class="primary-btn" id="detailPlay">▶ Play</button><button class="secondary-btn" id="detailLike">♡ Like</button><button class="secondary-btn" id="detailWatchlist">＋ My List</button><button class="secondary-btn" id="detailDislike">Dislike</button></div>
+          <div class="why-card"><div class="why-heading"><strong>Why this matched</strong><button class="ghost-btn compact" id="detailEvidenceButton" data-showcase-only>Evidence scorecard</button></div><p id="detailReason"></p><div id="detailMatchFields" class="match-fields" data-showcase-only></div><div id="detailEvidenceScorecard" class="evidence-scorecard" data-showcase-only hidden></div></div>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="memory-dialog" id="memoryDialog" data-showcase-only>
+      <button class="dialog-close" id="closeMemory">×</button>
+      <div class="memory-header"><span class="eyebrow">Agent Memory</span><h2>Viewer memory inspector</h2><p>Long-term facts combine Agent Memory with the authoritative structured viewer profile.</p></div>
+      <div class="memory-tabs"><button class="active" data-memory-tab="long_term">Long-term profile</button><button data-memory-tab="short_term">Short-term session</button><button data-memory-tab="search">Semantic memory search</button></div>
+      <div id="memoryContent" class="memory-content"></div>
+      <form id="memorySearchForm" class="memory-search" hidden><input id="memorySearchInput" placeholder="Search: directors the viewer likes" /><select id="memorySearchScope"><option value="all">All sessions</option><option value="long">Long-term</option><option value="short">Short-term</option></select><button class="primary-btn" type="submit">Search memory</button></form>
+    </dialog>
+
+    <dialog class="profile-dialog" id="profileDialog">
+      <button class="dialog-close" id="closeProfile">×</button>
+      <div class="profile-header"><span class="eyebrow" id="profileEyebrow">Operational viewer state</span><h2>My StreamAI Profile</h2><p id="profileDescription">Edit explicit preferences and inspect the exact likes, dislikes and history that drive recommendations.</p></div>
+      <div class="profile-stats" id="profileStats"></div>
+      <div class="profile-memory-sync" data-showcase-only><strong id="profileMemorySyncStatus">Checking Agent Memory</strong><p id="profileMemorySyncDetails"></p><small id="profileMemorySyncSession"></small><button class="secondary-btn compact" type="button" id="syncProfileMemory">Sync / retry Agent Memory</button></div>
+      <form id="profileForm" class="profile-form">
+        <label>Preferred genres<input id="profilePreferredGenres" placeholder="Thriller, Science Fiction" /></label>
+        <label>Genres to avoid<input id="profileDislikedGenres" placeholder="Horror" /></label>
+        <label>Preferred themes<input id="profilePreferredThemes" placeholder="Animals, Motorcycles" /></label>
+        <label>Themes to avoid<input id="profileDislikedThemes" /></label>
+        <label>Favourite actors/directors<input id="profilePreferredPeople" placeholder="Denis Villeneuve" /></label>
+        <label>People to avoid<input id="profileDislikedPeople" /></label>
+        <label>Languages<input id="profileLanguages" placeholder="English, Korean" /></label>
+        <label>Maximum runtime<input id="profileRuntime" type="number" min="30" max="600" placeholder="No limit" /></label>
+        <label class="checkbox-row"><input id="profileAvoidViolence" type="checkbox" /> Avoid graphic violence</label>
+        <label class="checkbox-row"><input id="profileAvoidAdultContent" type="checkbox" /> Avoid sexual and adult content</label>
+        <button class="primary-btn" type="submit">Save preferences</button>
+      </form>
+      <div class="profile-lists">
+        <section><h3>Liked titles</h3><div class="profile-title-grid" id="profileLikedTitles"></div></section>
+        <section><h3>Disliked titles</h3><div class="profile-title-grid" id="profileDislikedTitles"></div></section>
+        <section><h3>My List</h3><div class="profile-title-grid" id="profileWatchlistTitles"></div></section>
+        <section><h3>Watch history</h3><div class="profile-title-grid" id="profileHistory"></div></section>
+      </div>
+    </dialog>
+
+    <dialog class="trace-thread-dialog" id="traceThreadDialog" data-showcase-only>
+      <button class="dialog-close" id="closeTraceThread">×</button>
+      <div class="trace-thread-header">
+        <div><span class="eyebrow">Agent Tracer session replay</span><h2 id="traceThreadTitle">Conversation thread</h2><p id="traceThreadMeta">Select a trace to inspect its complete call activity.</p></div>
+        <div class="trace-thread-actions"><button class="secondary-btn compact" id="copyTraceJson">Copy JSON</button><button class="secondary-btn compact" id="downloadSessionJson">Download JSON</button></div>
+      </div>
+      <div class="trace-component-path" id="traceComponentPath"></div>
+      <div class="trace-thread-layout">
+        <section class="trace-thread-timeline" id="traceThreadTimeline"></section>
+        <aside class="trace-event-detail" id="traceEventDetail"><div class="empty-row">Click a user message, plan, tool call or assistant response to inspect its payload.</div></aside>
+      </div>
+    </dialog>
+
+
+    <dialog class="showcase-dialog" id="showcaseDialog" data-showcase-only>
+      <button class="dialog-close" id="closeShowcase">×</button>
+      <div class="showcase-header">
+        <div><span class="eyebrow">StreamAI v1.1</span><h2>AI Data Plane Showcase Studio</h2><p>Guided presentation, explainability, search comparison, governance, resilience, evaluation and Capella readiness.</p></div>
+        <div class="showcase-header-actions"><button class="secondary-btn compact" id="showcaseRefresh">Refresh</button><button class="primary-btn compact" id="showcaseReset">Reset demo</button></div>
+      </div>
+      <div class="showcase-tabs" id="showcaseTabs">
+        <button class="active" data-showcase-tab="presenter">Presenter</button>
+        <button data-showcase-tab="search">Search Lab</button>
+        <button data-showcase-tab="governance">Governance</button>
+        <button data-showcase-tab="resilience">Resilience</button>
+        <button data-showcase-tab="evaluation">Evaluation</button>
+        <button data-showcase-tab="policy">Policy & Data</button>
+        <button data-showcase-tab="capella">Capella</button>
+      </div>
+      <section class="showcase-pane" data-showcase-pane="presenter">
+        <div class="persona-bar"><strong>Seed persona</strong><div id="showcasePersonas"></div></div>
+        <div class="presenter-layout"><div class="demo-step-list" id="demoStepList"></div><aside class="demo-step-detail" id="demoStepDetail"><div class="empty-row">Select a step to see the talk track and run it.</div></aside></div>
+      </section>
+      <section class="showcase-pane" data-showcase-pane="search" hidden>
+        <form id="searchLabForm" class="search-lab-form"><input id="searchLabQuery" value="atmospheric political thriller" /><select id="searchLabContentType"><option value="">Films + TV</option><option value="movie">Films</option><option value="tv">TV</option></select><button class="primary-btn" type="submit">Compare modes</button></form>
+        <div id="searchLabSummary" class="showcase-summary"></div><div id="searchLabResults" class="search-lab-results"></div>
+      </section>
+      <section class="showcase-pane" data-showcase-pane="governance" hidden><div id="governanceStudio" class="governance-studio"><div class="empty-row">Open this tab to load the active catalogue.</div></div></section>
+      <section class="showcase-pane" data-showcase-pane="resilience" hidden>
+        <div class="resilience-grid" id="resilienceControls"></div><div class="resilience-callout"><strong>Safe simulation</strong><p>These switches inject controlled failures in StreamAI routes. Containers and Couchbase services are not stopped.</p><button class="secondary-btn" id="clearFaults">Clear all simulations</button></div>
+      </section>
+      <section class="showcase-pane" data-showcase-pane="evaluation" hidden><div class="evaluation-heading"><div><h3>Grounding and routing regression suite</h3><p>Runs representative deterministic checks and stores the result in Couchbase.</p></div><button class="primary-btn" id="runEvaluation">Run evaluation</button></div><div id="evaluationResults"></div></section>
+      <section class="showcase-pane" data-showcase-pane="policy" hidden>
+        <div class="policy-grid"><form id="policySimulatorForm"><h3>Entitlement what-if</h3><label>Title or catalogue ID<input id="policyTitleId" placeholder="Select a title card or enter a title" /></label><div class="policy-inline-status" id="policyInlineStatus">Select any title card to prefill this field.</div><label>Region<select id="policyRegion"><option>GB</option><option>IE</option><option>US</option></select></label><label>Plan<select id="policyTier"><option>basic</option><option selected>standard</option><option>premium</option></select></label><label>Parental rating<select id="policyRating"><option>12</option><option>15</option><option selected>18</option></select></label><button class="primary-btn" id="simulateDecisionButton" type="submit">Simulate decision</button></form><div id="policySimulationResult"><div class="empty-row">Choose a title and run a non-mutating entitlement scenario.</div></div></div>
+        <div class="supporting-documents"><div class="mini-heading"><strong>Supporting Couchbase documents</strong><button class="secondary-btn compact" id="loadSupportingDocs">Load current evidence</button></div><div id="supportingDocuments"></div></div>
+        <div class="profile-time-travel"><div class="mini-heading"><strong>Viewer profile time travel</strong><button class="secondary-btn compact" id="loadProfileTimeline">Refresh timeline</button></div><div id="profileTimeline"></div></div>
+      </section>
+      <section class="showcase-pane" data-showcase-pane="capella" hidden><div id="capellaShowcase"></div></section>
+    </dialog>
+
+    <div class="toast" id="toast" hidden></div>
+
+    <footer>
+      <div data-showcase-only><strong>StreamAI v1.1.0</strong><span>Fast governed plans + semantic plan cache + Agent Memory + KV + Query + Search + Vector</span></div>
+      <div class="tmdb-attribution">This product uses the TMDB API but is not endorsed or certified by TMDB.</div>
+    </footer>
+  </div>
+  <script src="/static/app.js?v=1.1.0" defer></script>
+</body>
+</html>
